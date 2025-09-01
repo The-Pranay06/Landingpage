@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Omnexus | Unified Creative Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0D1117;
+            color: #e6edf3;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #8A5EFF 0%, #54A2FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+
+        .comparison-container {
+            background-color: #161B22;
+            border: 1px solid #30363d;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* Alternating row colors for better scannability */
+        .comparison-row:nth-child(even) {
+            background-color: rgba(33, 38, 45, 0.3);
+        }
+
+        .comparison-row {
+            transition: background-color 0.3s ease;
+        }
+
+        .comparison-row:hover {
+            background-color: rgba(48, 54, 61, 0.5);
+        }
+
+        .icon-check {
+            color: #4CAF50; /* Brighter, accessible Green */
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .icon-cross {
+            color: #F44336; /* Deeper, accessible Red */
+            text-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+        }
+
+        .cta-button {
+            background: linear-gradient(90deg, #8A5EFF 0%, #54A2FF 100%);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(138, 94, 255, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(138, 94, 255, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pricing-card {
+            background-color: rgba(22, 27, 34, 0.7); /* Semi-transparent background */
+            border: 1px solid #30363d;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.8s ease-in-out forwards;
+            opacity: 0;
+            backdrop-filter: blur(10px); /* Frosted glass effect */
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+        .pricing-card:nth-child(4) { animation-delay: 0.4s; }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: #8A5EFF;
+        }
+
+        .cta-button-placeholder {
+            background-color: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            cursor: default;
+            text-align: center;
+        }
+
+        :root {
+            --omn-blue: #54A2FF;
+            --omn-violet: #8A5EFF;
+            --omn-pink: #FF5FA2;
+        }
+
+        .faq-item {
+            background: #161B22;
+            border: 1px solid #30363d;
+            border-radius: .5rem;
+        }
+
+        .faq-item summary {
+            transition: color .3s ease;
+            list-style: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .faq-item summary:hover {
+            color: var(--omn-violet);
+        }
+
+        .faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .faq-item summary::after {
+            content: '+';
+            font-size: 1.5rem;
+            transition: transform .3s ease;
+            position: absolute;
+            right: 1.5rem;
+        }
+
+        .faq-item[open] summary::after {
+            transform: rotate(45deg);
+        }
+
+        .answer-container {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .5s ease, opacity .3s ease, transform .3s ease;
+            opacity: 0;
+            transform: scaleY(.98);
+            transform-origin: top;
+        }
+
+        .faq-item[open] .answer-container {
+            grid-template-rows: 1fr;
+            opacity: 1;
+            transform: scaleY(1);
+        }
+
+        .answer-content {
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .faq-wrap {
+            position: relative;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .faq-bg {
+            position: absolute;
+            inset: -10vh -10vw -40vh -10vw;
+            z-index: -1;
+            pointer-events: none;
+            filter: saturate(1.1);
+        }
+
+        .faq-bg::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(120% 80% at 50% 120%, color-mix(in oklab, var(--omn-violet) 45%, transparent) 0%, color-mix(in oklab, var(--omn-blue) 50%, transparent) 35%, color-mix(in oklab, var(--omn-pink) 45%, transparent) 60%, transparent 72%);
+            opacity: .65;
+            filter: blur(14px);
+        }
+
+        .faq-bg::after {
+            content: "";
+            position: absolute;
+            inset: -10% -5%;
+            background: radial-gradient(60% 120% at 20% 85%, color-mix(in oklab, var(--omn-blue) 65%, transparent) 0%, transparent 70%), radial-gradient(50% 110% at 80% 95%, color-mix(in oklab, var(--omn-violet) 55%, transparent) 0%, transparent 75%), radial-gradient(70% 120% at 50% 110%, color-mix(in oklab, var(--omn-pink) 55%, transparent) 0%, transparent 80%);
+            background-repeat: no-repeat;
+            animation: auroraShift 28s linear infinite;
+            filter: blur(26px);
+            opacity: .35;
+        }
+
+        @keyframes auroraShift {
+            0% {
+                background-position: 0% 0%, 0% 0%, 0% 0%;
+            }
+            50% {
+                background-position: 12% 8%, -8% 6%, 10% -6%;
+            }
+            100% {
+                background-position: 0% 0%, 0% 0%, 0% 0%;
+            }
+        }
+
+        .cta-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            background: linear-gradient(90deg, var(--omn-violet), var(--omn-blue), var(--omn-pink));
+            background-size: 220% 100%;
+            background-position: 0% 0%;
+            color: #fff;
+            border-radius: .75rem;
+            padding: 1rem 2.5rem;
+            font-weight: 700;
+            transition: transform .25s ease, box-shadow .25s ease, background-position .6s ease;
+            box-shadow: 0 4px 15px rgba(138, 94, 255, 0.3);
+            animation: gradientDrift 12s ease-in-out infinite;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            background-position: 100% 0%;
+            box-shadow: 0 7px 20px rgba(138, 94, 255, 0.4);
+        }
+
+        .cta-button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(138, 94, 255, 0.55), 0 8px 24px rgba(138, 94, 255, 0.35);
+        }
+
+        .cta-button::after {
+            content: "→";
+            font-weight: 700;
+            transform: translateX(0);
+            transition: transform .3s ease;
+        }
+
+        .cta-button:hover::after {
+            transform: translateX(4px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .cta-button {
+                animation: none;
+                transition: none;
+            }
+            .cta-button:hover {
+                transform: none;
+                background-position: 0% 0%;
+                box-shadow: 0 4px 15px rgba(138, 94, 255, 0.3);
+            }
+            .cta-button::after {
+                transition: none;
+            }
+        }
+
+        @keyframes gradientDrift {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 0%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        /* Footer styling */
+        .footer-brand {
+            color: #fff;
+            font-weight: 800;
+            font-size: clamp(2.5rem, 1.7rem + 2.5vw, 3.5rem);
+            letter-spacing: .01em;
+            -webkit-text-stroke: 1.5px black;
+            paint-order: stroke fill;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        .footer-support {
+            color: #fff;
+            font-weight: 700;
+            font-size: clamp(1.125rem, 1rem + .5vw, 1.375rem);
+            text-shadow: 0 0 1px #fff, 0 0 6px rgba(255, 255, 255, .9), 0 0 14px rgba(138, 94, 255, .45), 0 0 24px rgba(84, 162, 255, .35);
+            transition: color .25s ease, text-shadow .35s ease;
+        }
+
+        .footer-support:hover {
+            color: #fff;
+            text-shadow: 0 0 2px #fff, 0 0 8px rgba(255, 255, 255, 1), 0 0 18px rgba(138, 94, 255, .55), 0 0 36px rgba(84, 162, 255, .45);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="p-6 bg-[#0D1117] text-[#e6edf3]">
+    <div class="max-w-6xl mx-auto flex flex-col gap-16">
+        <!-- WHY US Section -->
+        <section>
+            <div class="w-full max-w-7xl mx-auto space-y-12">
+                <div class="text-center">
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
+                        Your Disconnected Workflow, Finally Unified
+                    </h1>
+                    <h2 class="text-2xl sm:text-4xl lg:text-5xl font-extrabold mt-2">
+                        <span class="gradient-text">AI-Powered. Automated. Seamless.</span>
+                    </h2>
+                    <p class="mt-6 text-lg sm:text-xl text-gray-400 max-w-3xl mx-auto">From fragmented workflows to a unified powerhouse: Your single platform for 3D creation, AR/VR simulation, and marketing.</p>
+                </div>
+
+                <div class="comparison-container rounded-2xl p-4 sm:p-6 lg:p-10">
+                    <div class="hidden md:grid grid-cols-3 gap-6 pb-6 px-4">
+                        <div class="col-span-1"><h3 class="text-xl lg:text-2xl font-bold text-white">Feature</h3></div>
+                        <div class="text-center"><h3 class="text-xl lg:text-2xl font-bold text-gray-400">Legacy Tools</h3><p class="text-sm text-gray-500">The Old Way</p></div>
+                        <div class="text-center"><h3 class="text-xl lg:text-2xl font-bold text-white">Omnexus</h3><p class="text-sm gradient-text font-semibold">The New Way</p></div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="comparison-row grid md:grid-cols-3 gap-x-6 gap-y-4 p-4 rounded-lg items-center">
+                            <div class="flex items-center space-x-4"><svg class="h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg><h4 class="text-xl font-extrabold text-white">3D Object Creation</h4></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-cross text-4xl font-bold">×</span><p class="text-gray-400 mt-1 text-sm leading-relaxed">Limited assets—hours wasted searching</p></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-check text-4xl font-bold">✓</span><p class="text-gray-200 mt-1 text-sm leading-relaxed">Generate from text/images—80% faster</p></div>
+                        </div>
+                        <div class="comparison-row grid md:grid-cols-3 gap-x-6 gap-y-4 p-4 rounded-lg items-center">
+                            <div class="flex items-center space-x-4"><svg class="h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z" /></svg><h4 class="text-xl font-extrabold text-white">Animation Workflow</h4></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-cross text-4xl font-bold">×</span><p class="text-gray-400 mt-1 text-sm leading-relaxed">Code-heavy; slows production</p></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-check text-4xl font-bold">✓</span><p class="text-gray-200 mt-1 text-sm leading-relaxed">Node-based logic system; animations in minutes</p></div>
+                        </div>
+                        <div class="comparison-row grid md:grid-cols-3 gap-x-6 gap-y-4 p-4 rounded-lg items-center">
+                            <div class="flex items-center space-x-4"><svg class="h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.75a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg><h4 class="text-xl font-extrabold text-white">AR/VR Readiness</h4></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-cross text-4xl font-bold">×</span><p class="text-gray-400 mt-1 text-sm leading-relaxed">Manual conversions delay timelines</p></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-check text-4xl font-bold">✓</span><p class="text-gray-200 mt-1 text-sm leading-relaxed">100% ready out-of-box—no extras</p></div>
+                        </div>
+                        <div class="comparison-row grid md:grid-cols-3 gap-x-6 gap-y-4 p-4 rounded-lg items-center">
+                            <div class="flex items-center space-x-4"><svg class="h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg><h4 class="text-xl font-extrabold text-white">Marketing Mockups</h4></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-cross text-4xl font-bold">×</span><p class="text-gray-400 mt-1 text-sm leading-relaxed">Separate apps; expensive visuals</p></div>
+                            <div class="text-center md:border-none border-t border-gray-700 pt-4 md:pt-0"><span class="icon-check text-4xl font-bold">✓</span><p class="text-gray-200 mt-1 text-sm leading-relaxed">Integrated mockup editor</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center max-w-3xl mx-auto space-y-8">
+                    <div class="bg-gray-800/20 border border-gray-700 rounded-lg p-4">
+                         <p class="text-2xl font-bold gradient-text">3 out of 4 users reported faster workflows</p>
+                         <p class="text-sm text-gray-500">(Based on internal beta user data)</p>
+                    </div>
+                </div>
+                
+                <div class="text-center pt-4">
+                     <a href="#" class="cta-button inline-block text-white font-bold text-lg px-10 py-4 rounded-lg">
+                        Get Early Access Now 
+                    </a>
+                    <p class="text-sm text-gray-400 mt-3 font-semibold">Select users may receive complimentary Premium access at launch; availability is limited!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRICING Section -->
+        <section>
+            <div class="w-full max-w-6xl mx-auto text-center">
+                <h1 class="text-4xl sm:text-5xl font-extrabold text-white">Our Pricing is Coming Soon</h1>
+                <p class="mt-4 text-lg text-gray-400">We're finalizing the details. In the meantime, explore our planned tiers.</p>
+
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    
+                    <!-- Free Tier -->
+                    <div class="pricing-card rounded-2xl p-6 text-left flex flex-col">
+                        <h2 class="text-2xl font-bold text-white">Free</h2>
+                        <p class="text-gray-400 mt-2">For hobbyists and exploring the platform.</p>
+                        <ul class="mt-8 space-y-3 text-gray-300 flex-grow">
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>10 AI Generation Credits</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Limited Animation Tools</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Basic Mockup Editor</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Watermarked Exports</span>
+                            </li>
+                             <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Community Support</span>
+                            </li>
+                        </ul>
+                        <div class="cta-button-placeholder w-full mt-8 block font-semibold py-3 px-6 rounded-lg">
+                            Pricing will be decided later
+                        </div>
+                    </div>
+
+                    <!-- Pro Tier -->
+                    <div class="pricing-card rounded-2xl p-6 text-left flex flex-col">
+                        <h2 class="text-2xl font-bold text-white">Pro</h2>
+                        <p class="text-gray-400 mt-2">For individuals and small teams getting started.</p>
+                        <ul class="mt-8 space-y-3 text-gray-300 flex-grow">
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>100 AI Generation Credits</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Standard Animation Tools</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Standard Mockup Suite</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Basic AR/VR Export</span>
+                            </li>
+                             <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Community Support</span>
+                            </li>
+                        </ul>
+                        <div class="cta-button-placeholder w-full mt-8 block font-semibold py-3 px-6 rounded-lg">
+                            Pricing will be decided later
+                        </div>
+                    </div><!-- Ultimate Tier -->
+                    <div class="pricing-card rounded-2xl p-6 text-left flex flex-col">
+                        <h2 class="text-2xl font-bold text-white">Ultimate</h2>
+                        <p class="text-gray-400 mt-2">For growing teams that need advanced features.</p>
+                        <ul class="mt-8 space-y-3 text-gray-300 flex-grow">
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>500 AI Generation Credits</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Advanced Animation Engine</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Advanced Mockup & Video Editor</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Team Collaboration</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>One-Click AR/VR Publishing</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Priority Support</span>
+                            </li>
+                        </ul>
+                        <div class="cta-button-placeholder w-full mt-8 block font-semibold py-3 px-6 rounded-lg">
+                            Pricing will be decided later
+                        </div>
+                    </div>
+
+                    <!-- Enterprise Tier -->
+                    <div class="pricing-card rounded-2xl p-6 text-left flex flex-col">
+                        <h2 class="text-2xl font-bold text-white">Enterprise</h2>
+                        <p class="text-gray-400 mt-2">For large organizations with custom needs.</p>
+                        <ul class="mt-8 space-y-3 text-gray-300 flex-grow">
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Unlimited AI Generations</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Advanced Security & SSO</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Custom API Integrations</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <svg class="h-6 w-6 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span>Dedicated Account Manager</span>
+                            </li>
+                        </ul>
+                        <div class="cta-button-placeholder w-full mt-8 block font-semibold py-3 px-6 rounded-lg">
+                            Pricing will be decided later
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-wrap">
+            <div class="faq-bg" aria-hidden="true"></div>
+            <div class="max-w-4xl mx-auto relative">
+                <div class="text-center mb-16">
+                    <h1 class="text-4xl sm:text-5xl font-extrabold text-white">Frequently Asked Questions</h1>
+                    <p class="mt-4 text-lg text-gray-400">Everything you need to know before we launch.</p>
+                </div>
+                <div class="space-y-4">
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">What exactly is Omnexus and who is it for?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>Omnexus is a unified creative platform designed to streamline the entire 3D workflow. Instead of jumping between different apps for modeling, animating, and creating mockups, you can do it all in one place. It's built for modern creators: 3D artists, product designers, marketers, and AR/VR developers who want to move faster and bring their ideas to life without being slowed down by disconnected, legacy tools.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">How is Omnexus different from other web-based 3D tools?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>Other web-based tools are great for creating 3D visuals. But Omnexus isn’t just about making things look good — it’s about making them work. Instead of juggling multiple fragmented tools, Omnexus brings everything together in one place with powerful AI integration:</p>
+                                <ol class="list-decimal list-inside space-y-3 my-4 pl-2 text-gray-400">
+                                    <li><span class="text-gray-300 font-semibold">Create and refine 3D objects</span> — from simple shapes to polished, production-ready assets.</li>
+                                    <li><span class="text-gray-300 font-semibold">Build interactive, functional experiences</span> — our visual node-based editor makes adding logic, animations, and even AR elements as easy as drag and drop.</li>
+                                    <li><span class="text-gray-300 font-semibold">Turn ideas into sales-ready content</span> — instantly generate mockups, animate them, and craft marketing visuals that actually convert.</li>
+                                </ol>
+                                <p>With Omnexus, you don’t stop at design. You go from idea → to interactive prototype → to real, engaging experiences — all without writing a single line of code.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">What can I do with my creations? What formats do you support?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>Anything you want! Omnexus is built to be the central hub of your creative pipeline. All assets are AR/VR-ready out-of-the-box. You can export your models and animations to standard industry formats like GLB, USDZ, FBX, and MP4, making them easy to use in game engines like Unity and Unreal, on websites, in social media marketing campaigns, or in other 3D software.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">Do I need a powerful computer or any special software?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>No. Omnexus is a fully browser-based platform. This means there are no heavy downloads or installations, and you don't need a high-end graphics card to get started. As long as you have a modern web browser and an internet connection, you can access the full power of Omnexus from anywhere.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">How will your pricing work? What’s the philosophy behind the tiers?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>While our final pricing is still being perfected, our philosophy is to make creativity accessible. We plan to have a <a href="pricing.html" class="text-[#8A5EFF] hover:underline">range of tiers</a>, including a Free plan perfect for exploring the platform. Our paid tiers (Pro, Ultimate) will be designed for professionals and teams who need more advanced features and higher usage limits, while our Enterprise plan will cater to large organizations. Our goal is to provide massive value at every level.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="faq-item cursor-pointer">
+                        <summary class="p-6 text-lg font-bold text-white w-full flex items-center">How can I get access and what happens next?</summary>
+                        <div class="answer-container">
+                            <div class="answer-content p-6 pt-0 text-gray-300">
+                                <p>We're currently in a private beta phase. The best way to get access is to sign up for our early access list on the main page. You'll be the first to receive an invitation when we open up more spots, and you'll also be eligible for exclusive launch-day offers. We'll be sending out invitations in batches as we scale up.</p>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="text-center mt-20">
+                    <h2 class="text-3xl font-bold text-white">Ready to join the future of creation?</h2>
+                    <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Sign up for early access and be the first to get your hands on Omnexus.</p>
+                    <a href="index.html" class="cta-button mt-8">
+                        Get Early Access
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="max-w-4xl mx-auto mt-24 py-8 text-gray-400">
+            <div class="flex flex-col items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <img src="logo.png" alt="Omnexus Logo" class="h-10 w-auto">
+                    <span class="footer-brand">Omnexus</span>
+                </div>
+                <a href="mailto:support@theomnexus.com" class="footer-support flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"></path>
+                    </svg>
+                    support@theomnexus.com
+                </a>
+            </div>
+            <hr class="w-full border-t border-gray-700/50">
+            <div class="w-full flex flex-col sm:flex-row justify-between items-center text-sm gap-4">
+                <div class="flex gap-6 font-semibold">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms & Conditions</a>
+                </div>
+                <p class="font-semibold">© 2025 Omnexus. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.querySelectorAll('.faq-item').forEach((el) => {
+            const summary = el.querySelector('summary');
+            const content = el.querySelector('.answer-container');
+
+            let animation = null;
+            let isClosing = false;
+            let isExpanding = false;
+
+            const onAnimationFinish = (open) => {
+                el.open = open;
+                el.style.height = '';
+                el.style.overflow = '';
+                animation = null;
+                isClosing = false;
+                isExpanding = false;
+            };
+
+            const close = () => {
+                isClosing = true;
+                const startHeight = el.offsetHeight;
+                el.style.height = `${startHeight}px`;
+                el.style.overflow = 'hidden';
+                el.offsetHeight; // reflow
+                const endHeight = summary.offsetHeight;
+
+                animation = el.animate(
+                    [{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+                    { duration: 300, easing: 'ease' }
+                );
+                animation.onfinish = () => onAnimationFinish(false);
+                animation.oncancel = () => (isClosing = false);
+            };
+
+            const open = () => {
+                isExpanding = true;
+                el.open = true; // to measure content height
+                const startHeight = el.offsetHeight;
+                const endHeight = summary.offsetHeight + content.scrollHeight;
+
+                el.style.height = `${startHeight}px`;
+                el.style.overflow = 'hidden';
+                el.offsetHeight; // reflow
+
+                animation = el.animate(
+                    [{ height: `${startHeight}px` }, { height: `${endHeight}px` }],
+                    { duration: 300, easing: 'ease' }
+                );
+                animation.onfinish = () => onAnimationFinish(true);
+                animation.oncancel = () => (isExpanding = false);
+            };
+
+            summary.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isClosing || isExpanding) animation?.cancel();
+                el.open ? close() : open();
+            });
+        });
+    </script>
+</body>
+</html>
